@@ -1,1 +1,1 @@
-distrutils
+py2exe
