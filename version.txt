@@ -5,10 +5,10 @@ VSVersionInfo(
             StringTable( u'040904b0', [
                 StringStruct(u'CompanyName', u'LTS AS, Dvergstien 6, 1890 Rakkestad, Norway'), 
                 StringStruct(u'ProductName', u'Mamman'),
-                StringStruct(u'ProductVersion', u'0, 0, 0, 0'),
+                StringStruct(u'ProductVersion', u'0, 0, 0, 2'),
                 StringStruct(u'InternalName', u'Mamman'),
                 StringStruct(u'OriginalFilename', u'Mamman.exe'),
-                StringStruct(u'FileVersion', u'0, 0, 0, 0'),
+                StringStruct(u'FileVersion', u'0, 0, 0, 2'),
                 StringStruct(u'FileDescription', u'Test'),
                 StringStruct(u'LegalCopyright', u'Copyright 2017 LTS AS'),
             ]) 
