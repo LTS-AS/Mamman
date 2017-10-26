@@ -1,1 +1,1 @@
-pyinstaller --onefile --version-file=version.txt main.py
+pyinstaller --onefile --version-file=version.txt build.spec
