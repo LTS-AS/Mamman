@@ -1,5 +1,5 @@
 automat
-pyinstraller
+pyinstaller
 pystray
 rsa
 yapsy
