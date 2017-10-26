@@ -1,8 +1,11 @@
-language: python
-python:
-  - "3.6"
-  - "3.6-dev" # 3.6 development branch
-  - "3.7-dev" # 3.7 development branch
+matrix:
+  include:
+   - os: windows
+     language: generic
+     env: TRAVIS_PYTHON_VERSION=3.6
+   - os: windows
+     language: generic
+     env: TRAVIS_PYTHON_VERSION=3.6-dev # 3.6 development branch
   
 # command to install dependencies
 install:
@@ -23,5 +26,4 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-    python: "3.6"
-    
+    TRAVIS_PYTHON_VERSION: "3.6"
