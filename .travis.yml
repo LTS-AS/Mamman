@@ -11,7 +11,7 @@ install:
 # test command, build command
 script:
   - pytest
-  - pyinstaller --onefile --version-file=version.txt main.py
+  - pyinstaller --onefile --version-file=version.txt build.spec
 
 # Deployment code    
 deploy:
