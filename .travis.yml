@@ -7,7 +7,21 @@ python:
 # command to install dependencies
 install:
   - pip install -r requirements.txt
-# command to run tests
+
+# test command, build command
 script:
   - pytest
   - pyinstaller --onefile --version-file=version.txt main.py
+
+# Deployment code    
+deploy:
+  provider: releases
+  api_key:
+    secure: $DEPLOYMENT_KEY_GITHUB
+  file:
+    - "dist/main.exe"
+  skip_cleanup: true
+  on:
+    - tags: true
+    - TRAVIS_PYTHON_VERSION: "3.6"
+    
