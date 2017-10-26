@@ -18,10 +18,9 @@ deploy:
   provider: releases
   api_key:
     secure: $DEPLOYMENT_KEY_GITHUB
-  file:
-    - "dist/main.exe"
+  file_glob: true
+  file: dist/*
   skip_cleanup: true
   on:
     tags: true
-    TRAVIS_PYTHON_VERSION: "3.6"
     
