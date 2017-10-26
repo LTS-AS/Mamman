@@ -25,9 +25,11 @@ from yapsy.PluginManager import PluginManager
 from os import getcwd, path, startfile
 from Mamman import model
 
+# These variables should be moved to the model
 user_key = None
-state = False
 client_machine = None
+# All state belongs to the model
+menu = model.menu
 
 #============================ tools start
 def tracer(old_state, input, new_state):
@@ -38,12 +40,11 @@ def tracer(old_state, input, new_state):
 def event_click_available():
     "UI event: User is enabeling the available flag"
     print('UI event: click')
-    global state
-    state = not state
+    menu.user_available = not menu.user_available
 
 def event_default():
     "UI event: Single click on icon"
-    startfile('https://lts.no/produkter/mamman')
+    startfile('https://lts.no/tjenester/eplan')
 
 def event_ready():
     "Event: Mamman is ready for use"
@@ -106,7 +107,12 @@ class clientMachine(object):
                           icon=Image.open("res\logo_yellow.png"),
                           title='LTS AS, Mamman 0.1')
         self._icon.visible = True
-        self._icon.menu = Menu(MenuItem('Avslutt Mamman', event_exit))
+
+        # connect the menu to the menu_items variable to make the menu dynamic
+        menu.items.append(MenuItem('Avslutt Mamman', event_exit))
+        self._icon.menu = Menu(lambda: (
+            menu.items[i]
+        for i in range(len(menu.items))))
 
         self._plugin_manager.setPluginPlaces([path.join(getcwd(), "src", "plugins")]) # Find plugins
         self._plugin_manager.collectPlugins() # Load plugins
@@ -128,19 +134,9 @@ class clientMachine(object):
     def _list_tasks(self):
         "Populate tasks in the the icon menu"
         self._icon.icon = Image.open("res\logo_blue.png")
-        self._icon.menu = Menu(
-            MenuItem('Hent oppgave', Menu(
-                MenuItem('2t, gjennomgang av revisjon', event_open_task),
-                MenuItem('1t, gjennomgang av revisjon', event_open_task)
-            )),
-            MenuItem('Ny prosess', Menu(
-                MenuItem('Gjennomgang', event_new_process),
-                MenuItem('EPLAN prosjekt', event_new_process)
-            )),
-            MenuItem('Jeg er tilgjengelig', event_click_available, checked=lambda self: state, enabled=lambda self: state),
-            MenuItem('Jeg er tilgjengelig', event_click_available, checked=lambda item: state),
-            MenuItem('Avslutt Mamman', event_exit),
-            MenuItem('Default click', event_default, default=True, visible=False))
+        menu.items.append(MenuItem('Jeg er tilgjengelig', event_click_available, checked=lambda item: menu.user_available))
+        #     MenuItem('Default click', event_default, default=True, visible=False))
+
 
     @_machine.output()
     def _close_application(self):
@@ -155,7 +151,6 @@ class clientMachine(object):
         return state
 
 #============================ states
-
     @_machine.state(initial=True)
     def starting(self):
         "In this state, you have not yet connected"
@@ -175,6 +170,7 @@ class clientMachine(object):
     @_machine.state()
     def ending(self):
         "In this state, you are shutting down the application."
+
 #============================ transitions
     # When we don't any connection, upon connecting, we will be connected
     starting.upon(
@@ -220,7 +216,6 @@ class clientMachine(object):
 #============================ state machine end
 
 if __name__ == "__main__":
-    print("src.model.variable")
     client_machine = clientMachine()
     client_machine.setTrace(tracer)
     client_machine.initiate_application()
