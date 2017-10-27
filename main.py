@@ -28,6 +28,7 @@ from Mamman import model
 # These variables should be moved to the model
 user_key = None
 client_machine = None
+main_dir = path.dirname(path.realpath(__file__))
 # All state belongs to the model
 menu = model.menu
 
@@ -104,7 +105,7 @@ class clientMachine(object):
     def _initiate_application(self):
         "Establish all parts of the application"
         self._icon = Icon(name='Mamman',
-                          icon=Image.open("res\logo_yellow.png"),
+                          icon=Image.open(path.join('res', 'logo_yellow.png')),
                           title='LTS AS, Mamman 0.1')
         self._icon.visible = True
 
@@ -114,7 +115,7 @@ class clientMachine(object):
             menu.items[i]
         for i in range(len(menu.items))))
 
-        self._plugin_manager.setPluginPlaces([path.join(getcwd(), "src", "plugins")]) # Find plugins
+        self._plugin_manager.setPluginPlaces([path.join("src", "plugins")]) # Find plugins
         self._plugin_manager.collectPlugins() # Load plugins
         for _pluginInfo in self._plugin_manager.getAllPlugins(): # Activate plugins
             self._plugin_manager.activatePluginByName(_pluginInfo.name)
@@ -133,7 +134,7 @@ class clientMachine(object):
     @_machine.output()
     def _list_tasks(self):
         "Populate tasks in the the icon menu"
-        self._icon.icon = Image.open("res\logo_blue.png")
+        self._icon.icon = Image.open(path.join('res', 'logo_blue.png'))
         menu.items.append(MenuItem('Jeg er tilgjengelig', event_click_available, checked=lambda item: menu.user_available))
         #     MenuItem('Default click', event_default, default=True, visible=False))
 

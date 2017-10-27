@@ -1,10 +1,8 @@
 matrix:
   include:
-   - os: windows
-     language: python
+   - language: python
      env: TRAVIS_PYTHON_VERSION=3.6
-   - os: windows
-     language: python
+   - language: python
      env: TRAVIS_PYTHON_VERSION=3.6-dev # 3.6 development branch
   
 # command to install dependencies
