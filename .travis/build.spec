@@ -3,11 +3,13 @@ import os
 from pprint import pprint
 
 block_cipher = None
+basedir = os.getcwd()
+print(basedir)
 
-a = Analysis(['main.py'],
-             pathex=[os.getcwd()],
+a = Analysis([os.path.join(basedir, 'main.py')],
+             pathex=[basedir],
              binaries= [],
-             datas= [ (os.path.join('res', '*.png'), 'res' ) ],
+             datas= [ (os.path.join(basedir, 'res', '*.png'), 'res' ) ],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -32,4 +34,4 @@ exe = EXE(pyz,
           runtime_tmpdir=None,
           strip=False,
           upx=True,
-          version='version.txt')
+          version=os.path.join('.travis', 'version.txt'))

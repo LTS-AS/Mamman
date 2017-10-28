@@ -7,12 +7,12 @@ matrix:
   
 # command to install dependencies
 install:
-  - pip install -r requirements.txt
+  - pip install -r .travis/requirements.txt
 
 # test command, build command
 script:
   - pytest
-  - pyinstaller --onefile --version-file=version.txt build.spec
+  - pyinstaller --onefile --version-file=.travis/version.txt .travis/build.spec
 
 # Deployment code    
 deploy:

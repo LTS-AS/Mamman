@@ -1,1 +1,1 @@
-pyinstaller --onefile --version-file=version.txt build.spec
+pyinstaller --onefile --version-file=.travis\version.txt .travis\build.spec
