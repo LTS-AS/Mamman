@@ -16,14 +16,24 @@ More info:
 
 """
 
-import subprocess
+import importlib, subprocess, sys, threading
+from queue import Queue
 from Mamman.environment import userdir
 from pystray import Icon, Menu, MenuItem
 from PIL import Image
 from automat import MethodicalMachine
-from yapsy.PluginManager import PluginManager
 from os import getcwd, path, startfile
 from Mamman import model
+import hashlib
+import win32ui
+
+class Plugin_container:
+    def __init__(self, plugin_id, plugin_name):
+        self.id = plugin_id
+        self.name = plugin_name
+        self.module = importlib.import_module("src.plugins."+plugin_name)
+        self.obj = self.module.Plugin()
+
 
 # These variables should be moved to the model
 user_key = None
@@ -76,6 +86,19 @@ def event_click_open_dir(icon, tasting):
     "UI event: Open working directory"
     print('UI event: Open working directory')
     subprocess.Popen('explorer "' + userdir.workspace + '"')
+
+def event_fingerprint_file(icon, item):
+    with open("C:\Test\Full folder\_junk.txt", "rb") as f1:
+        checksum2 = hashlib.sha256(f1.read()).hexdigest()
+    win32ui.MessageBox(checksum2, 'SHA256 result')
+
+# TODO: Delete this thest-code
+def event_item_selected(icon, item, *args):
+    print(icon)
+    print(item)
+    print(*args)
+
+
 #============================ event handelers end
 #============================ state machine start
 class clientMachine(object):
@@ -86,7 +109,8 @@ class clientMachine(object):
     _machine = MethodicalMachine()
     _connection = None
     _icon = None
-    _plugin_manager = PluginManager()
+    _plugin_names = ["demo"]
+    p = []
 
     setTrace = _machine._setTrace # making trace-function available. Usefull debugging feature
 
@@ -118,14 +142,25 @@ class clientMachine(object):
 
         # connect the menu to the menu_items variable to make the menu dynamic
         menu.items.append(MenuItem('Avslutt Mamman', event_exit))
+
+        menu.items.append(MenuItem('Fingerprint file', event_fingerprint_file))
+
+        # Establish plugins in Plugin_container classes
+        plugin_id = 0
+        for plugin_name in self._plugin_names:
+            plugin_id += 1
+            self.p.append(Plugin_container(plugin_id, plugin_name))
+
+        # Initiate plugins, populate menu_items
+        #for p in self.p:
+        #    p.obj.function_in_plugin()
+        
+        #    menu.items.append(plugin.menu_items())
+
         self._icon.menu = Menu(lambda: (
             menu.items[i]
-        for i in range(len(menu.items))))
+            for i in range(len(menu.items))))
 
-        self._plugin_manager.setPluginPlaces([path.join("src", "plugins")]) # Find plugins
-        self._plugin_manager.collectPlugins() # Load plugins
-        for _pluginInfo in self._plugin_manager.getAllPlugins(): # Activate plugins
-            self._plugin_manager.activatePluginByName(_pluginInfo.name)
         event_ready() # Mark that the process is finished by trigging an event
         self._icon.run() #_icon.run is last because it is not ending before _icon.stop
 
