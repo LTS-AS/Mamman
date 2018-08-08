@@ -8,7 +8,8 @@ Example:
 
 Todo:
     * Populate menu-array
-    * Finish PDF process
+    * Move Plugin_container class to separate file
+    * Establish model class?
 
 More info:
    https://lts.no
@@ -24,30 +25,6 @@ from PIL import Image
 from automat import MethodicalMachine
 from os import getcwd, path, startfile
 from Mamman import model
-import hashlib
-import win32ui
-
-class Plugin_container:
-    def __init__(self, plugin_id, plugin_name):
-        self.id = plugin_id
-        self.name = plugin_name
-        self.module = importlib.import_module("src.plugins."+plugin_name)
-        self.obj = self.module.Plugin()
-
-
-# These variables should be moved to the model
-user_key = None
-client_machine = None
-
-if getattr(sys, 'frozen', False):
-    # An executable file includes all resources
-    globalpath = sys._MEIPASS
-else:
-    # The application is not packaged up in one file
-    globalpath = path.dirname(path.realpath(__file__))
-
-# All state belongs to the model
-menu = model.menu
 
 #============================ tools start
 def tracer(old_state, input, new_state):
@@ -86,15 +63,17 @@ def event_click_open_dir(icon, tasting):
     "UI event: Open working directory"
     print('UI event: Open working directory')
     subprocess.Popen('explorer "' + userdir.workspace + '"')
-
-def event_fingerprint_file(icon, item):
-    with open("C:\Test\Full folder\_junk.txt", "rb") as f1:
-        checksum2 = hashlib.sha256(f1.read()).hexdigest()
-    win32ui.MessageBox(checksum2, 'SHA256 result')
-
 #============================ event handelers end
+#============================ plugin encapsulation class start
+class Plugin_container:
+    def __init__(self, plugin_id, plugin_name):
+        self.id = plugin_id
+        self.name = plugin_name
+        self.module = importlib.import_module("src.plugins."+plugin_name)
+        self.obj = self.module.Plugin()
+#============================ plugin encapsulation class end
 #============================ state machine start
-class clientMachine(object):
+class Client_machine(object):
     "Finite state-machine for the Mamman client"
     from Mamman.api import connection
     from Mamman.crypto import tools
@@ -107,7 +86,7 @@ class clientMachine(object):
 
     setTrace = _machine._setTrace # making trace-function available. Usefull debugging feature
 
-#============================ inputs
+    #============================ inputs
     @_machine.input()
     def initiate_application(self):
         "Initiate connection to server"
@@ -124,7 +103,7 @@ class clientMachine(object):
     def close_application(self):
         "The user put in some beans."
 
-#============================ outputs
+    #============================ outputs
     @_machine.output()
     def _initiate_application(self):
         "Establish all parts of the application"
@@ -136,17 +115,11 @@ class clientMachine(object):
         # connect the menu to the menu_items variable to make the menu dynamic
         menu.items.append(MenuItem('Avslutt Mamman', event_exit))
 
-        menu.items.append(MenuItem('Fingerprint file', event_fingerprint_file))
-
         # Establish plugins in Plugin_container classes
         plugin_id = 0
         for plugin_name in self._plugin_names:
             plugin_id += 1
             self.p.append(Plugin_container(plugin_id, plugin_name))
-
-        # Initiate plugins, populate menu_items
-        #for p in self.p:
-        #    p.obj.function_in_plugin()
         
         #    menu.items.append(plugin.menu_items())
 
@@ -180,13 +153,14 @@ class clientMachine(object):
         self._icon.menu = None
         #self._icon.visible = False
         self._icon.stop()
+        q.join()       # block until all tasks are done
 
     @_machine.serializer()
     def get_state(self, state):
         "Returning the internal machine state"
         return state
 
-#============================ states
+    #============================ states
     @_machine.state(initial=True)
     def starting(self):
         "In this state, you have not yet connected"
@@ -207,7 +181,7 @@ class clientMachine(object):
     def ending(self):
         "In this state, you are shutting down the application."
 
-#============================ transitions
+    #============================ transitions
     # When we don't any connection, upon connecting, we will be connected
     starting.upon(
         initiate_application,
@@ -248,10 +222,34 @@ class clientMachine(object):
             _close_application
             ]
         )
-
 #============================ state machine end
 
 if __name__ == "__main__":
-    client_machine = clientMachine()
+    # Establishing asyncronus task queue
+    q = Queue()
+
+    # Worker
+    def worker():
+        while True:
+            item = q.get()
+            print(item)
+            q.task_done()
+    
+    # Establish a number of worker threads
+    for i in range(10):
+        t = threading.Thread(target=worker)
+        t.daemon = True
+        t.start()
+
+    if getattr(sys, 'frozen', False):
+        # An executable file includes all resources
+        globalpath = sys._MEIPASS
+    else:
+        # The application is not packaged up in one file
+        globalpath = path.dirname(path.realpath(__file__))
+
+    # All state belongs to the model
+    menu = model.menu
+    client_machine = Client_machine()
     client_machine.setTrace(tracer)
     client_machine.initiate_application()
