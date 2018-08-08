@@ -92,13 +92,6 @@ def event_fingerprint_file(icon, item):
         checksum2 = hashlib.sha256(f1.read()).hexdigest()
     win32ui.MessageBox(checksum2, 'SHA256 result')
 
-# TODO: Delete this thest-code
-def event_item_selected(icon, item, *args):
-    print(icon)
-    print(item)
-    print(*args)
-
-
 #============================ event handelers end
 #============================ state machine start
 class clientMachine(object):
