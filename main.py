@@ -19,12 +19,12 @@ More info:
 
 import importlib, subprocess, sys, threading
 from queue import Queue
-from Mamman.environment import userdir
+from mamman.environment import userdir
 from pystray import Icon, Menu, MenuItem
 from PIL import Image
 from automat import MethodicalMachine
 from os import getcwd, path, startfile
-from Mamman import model
+from mamman import model
 
 #============================ tools start
 def tracer(old_state, input, new_state):
@@ -69,14 +69,14 @@ class Plugin_container:
     def __init__(self, plugin_id, plugin_name):
         self.id = plugin_id
         self.name = plugin_name
-        self.module = importlib.import_module("src.plugins."+plugin_name)
+        self.module = importlib.import_module("mamman.plugins."+plugin_name)
         self.obj = self.module.Plugin()
 #============================ plugin encapsulation class end
 #============================ state machine start
 class Client_machine(object):
     "Finite state-machine for the Mamman client"
-    from Mamman.api import connection
-    from Mamman.crypto import tools
+    from mamman.api import connection
+    from mamman.crypto import tools
 
     _machine = MethodicalMachine()
     _connection = None
