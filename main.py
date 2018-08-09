@@ -29,7 +29,7 @@ from mamman import model
 #============================ tools start
 def state_tracer(old_state, input_, new_state):
     "Tracer function for debugging"
-    logging.info("old_state: "+ old_state+ " input: "+ input_+ " new state: "+ new_state)
+    logging.info("state_tracer - old_state:"+ old_state+ ", input:"+ input_+ ", new state:"+ new_state)
 #============================ tools end
 #============================ event handelers start
 def event_click_available():

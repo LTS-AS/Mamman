@@ -2,10 +2,10 @@ from logging import info
 
 class Plugin:
     def __init__(self, *args, **kwargs):
-        print('Plugin init ("demo"):', args, kwargs)
+        info(__name__+' - Plugin init ("demo"):'+ str(args)+ str(kwargs))
 
     def function_in_plugin(self):
-        print("Plugin success")
+        info("Plugin success")
 
     @property
     def menu_items(self):
