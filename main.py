@@ -59,10 +59,9 @@ def event_exit():
     "UI event: Exit"
     client_machine.close_application()
 
-def event_click_open_dir(icon, tasting):
-    "UI event: Open working directory"
-    print('UI event: Open working directory')
-    subprocess.Popen('explorer "' + userdir.workspace + '"')
+def event_plugin_item_click(icon, tasting):
+    "UI event: a plugin element is clicked"
+    print('UI event: a plugin element is clicked')
 #============================ event handelers end
 #============================ plugin encapsulation class start
 class Plugin_container:
@@ -121,7 +120,7 @@ class Client_machine(object):
             plugin_id += 1
             self.p.append(Plugin_container(plugin_id, plugin_name))
         
-        #    menu.items.append(plugin.menu_items())
+
 
         self._icon.menu = Menu(lambda: (
             menu.items[i]
@@ -143,9 +142,9 @@ class Client_machine(object):
     def _list_tasks(self):
         "Populate tasks in the the icon menu"
         self._icon.icon = Image.open(path.join(globalpath, 'res', 'logo_blue.png'))
-        menu.items.append(MenuItem('Jeg er tilgjengelig', event_click_available, checked=lambda item: menu.user_available))
-        #     MenuItem('Default click', event_default, default=True, visible=False))
-
+        for plugin in self.p:
+            for element in plugin.obj.menu_items:
+                menu.items.append(MenuItem(element, event_plugin_item_click, checked=None, radio=False))
 
     @_machine.output()
     def _close_application(self):

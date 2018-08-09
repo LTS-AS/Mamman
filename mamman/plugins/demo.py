@@ -7,7 +7,11 @@ class Plugin:
     def function_in_plugin(self):
         print("Plugin success")
 
+    @property
     def menu_items(self):
-        return [self.MenuItem("Plugin menu item", self.function_in_plugin)]
+        return ["Plugin menu item"]
+
+    def run_menu_item(self, item_name):
+        return True
 
     
