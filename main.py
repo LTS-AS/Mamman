@@ -17,7 +17,7 @@ More info:
 
 """
 
-import importlib, subprocess, sys, threading
+import importlib, logging, subprocess, sys, threading
 from queue import Queue
 from mamman.environment import userdir
 from pystray import Icon, Menu, MenuItem
@@ -27,14 +27,14 @@ from os import getcwd, path, startfile
 from mamman import model
 
 #============================ tools start
-def tracer(old_state, input, new_state):
+def state_tracer(old_state, input_, new_state):
     "Tracer function for debugging"
-    print("old_state:", old_state, "input:", input, "new state:", new_state)
+    logging.info("old_state: "+ old_state+ " input: "+ input_+ " new state: "+ new_state)
 #============================ tools end
 #============================ event handelers start
 def event_click_available():
     "UI event: User is enabeling the available flag"
-    print('UI event: click')
+    logging.info('UI event: click')
     menu.user_available = not menu.user_available
 
 def event_default():
@@ -45,23 +45,13 @@ def event_ready():
     "Event: Mamman is ready for use"
     client_machine.reading_finished()
 
-def event_new_process(icon, item):
-    "UI event: Establish new process"
-    print(icon)
-    print(item)
-
-def event_open_task(icon, item):
-    "UI event: Open task folder"
-    print(icon)
-    print(item)
-
 def event_exit():
     "UI event: Exit"
     client_machine.close_application()
 
 def event_plugin_item_click(icon, tasting):
     "UI event: a plugin element is clicked"
-    print('UI event: a plugin element is clicked')
+    client_machine.p[0].obj.run_menu_item("TEST: RUNNING MENU ITEM")
 #============================ event handelers end
 #============================ plugin encapsulation class start
 class Plugin_container:
@@ -72,7 +62,7 @@ class Plugin_container:
         self.obj = self.module.Plugin()
 #============================ plugin encapsulation class end
 #============================ state machine start
-class Client_machine(object):
+class Model(object):
     "Finite state-machine for the Mamman client"
     from mamman.api import connection
     from mamman.crypto import tools
@@ -136,7 +126,7 @@ class Client_machine(object):
         credentials = self.tools(userdir.crypto).get_credentials()
         user_key = self._connection.post('user', credentials)['resource'][0]['key']
         if user_key != None:
-            print("ATOMATIC event: User login OK\n", user_key)
+            logging.info("ATOMATIC event: User login OK\n"+ user_key)
 
     @_machine.output()
     def _list_tasks(self):
@@ -226,7 +216,7 @@ class Client_machine(object):
 if __name__ == "__main__":
     # Establishing asyncronus task queue
     q = Queue()
-
+    logging.basicConfig(level="INFO")
     # Worker
     def worker():
         while True:
@@ -249,6 +239,6 @@ if __name__ == "__main__":
 
     # All state belongs to the model
     menu = model.menu
-    client_machine = Client_machine()
-    client_machine.setTrace(tracer)
+    client_machine = Model()
+    client_machine.setTrace(state_tracer)
     client_machine.initiate_application()
