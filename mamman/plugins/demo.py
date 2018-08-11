@@ -1,15 +1,15 @@
 from logging import info
 
+menu_item_names = ['Plugin menu item','Second plugin menu item']
+
 class Plugin:
     def __init__(self, *args, **kwargs):
         info(__name__+' - Plugin init ("demo"):'+ str(args)+ str(kwargs))
 
-    def function_in_plugin(self):
-        info("Plugin success")
-
     @property
     def menu_items(self):
-        return ["Plugin menu item"]
+        return menu_item_names
 
-    def run_menu_item(self, item_name):
-        info(item_name)
+    @staticmethod
+    def run_menu_item(pystray_object, text):
+        print("run_menu_item executing", __name__, text)

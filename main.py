@@ -41,17 +41,13 @@ def event_default():
     "UI event: Single click on icon"
     startfile('https://lts.no/tjenester/eplan')
 
-def event_ready():
+def event_all_loaded():
     "Event: Mamman is ready for use"
     client_machine.reading_finished()
 
-def event_exit():
+def event_click_exit():
     "UI event: Exit"
     client_machine.close_application()
-
-def event_plugin_item_click(icon, tasting):
-    "UI event: a plugin element is clicked"
-    client_machine.p[0].obj.run_menu_item("TEST: RUNNING MENU ITEM")
 #============================ event handelers end
 #============================ plugin encapsulation class start
 class Plugin_container:
@@ -74,7 +70,6 @@ class Model(object):
     p = []
 
     setTrace = _machine._setTrace # making trace-function available. Usefull debugging feature
-
     #============================ inputs
     @_machine.input()
     def initiate_application(self):
@@ -102,11 +97,11 @@ class Model(object):
         self._icon.visible = True
 
         # connect the menu to the menu_items variable to make the menu dynamic
-        menu.items.append(MenuItem('Avslutt Mamman', event_exit))
+        menu.items.append(MenuItem('Avslutt Mamman', event_click_exit))
+        menu.items.append(MenuItem('Default item', event_default, visible=False, default=True))
 
         # Establish plugins in Plugin_container classes
-        plugin_id = 0
-        for plugin_name in self._plugin_names:
+        for plugin_id, plugin_name in enumerate(self._plugin_names):
             plugin_id += 1
             self.p.append(Plugin_container(plugin_id, plugin_name))
         
@@ -116,7 +111,7 @@ class Model(object):
             menu.items[i]
             for i in range(len(menu.items))))
 
-        event_ready() # Mark that the process is finished by trigging an event
+        event_all_loaded() # Mark that the process is finished by trigging an event
         self._icon.run() #_icon.run is last because it is not ending before _icon.stop
 
     @_machine.output()
@@ -132,9 +127,9 @@ class Model(object):
     def _list_tasks(self):
         "Populate tasks in the the icon menu"
         self._icon.icon = Image.open(path.join(globalpath, 'res', 'logo_blue.png'))
-        for plugin in self.p:
+        for plugin_id, plugin in enumerate(self.p):
             for element in plugin.obj.menu_items:
-                menu.items.append(MenuItem(element, event_plugin_item_click, checked=None, radio=False))
+                menu.items.append(MenuItem(element, self.p[plugin_id].obj.run_menu_item, checked=None, radio=False))
 
     @_machine.output()
     def _close_application(self):
