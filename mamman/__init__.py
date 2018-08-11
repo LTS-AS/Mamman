@@ -7,24 +7,20 @@ Example:
  python main.py
 
 Todo:
-    * Populate menu-array
-    * Move Plugin_container class to separate file
     * Establish model class?
 
 More info:
-   https://lts.no
    https://github.com/lts-as
+   https://lts.no
 
 """
-
-import importlib, logging, subprocess, sys, threading
-from queue import Queue
-from mamman.environment import userdir
+from automat import MethodicalMachine
+import logging, subprocess, sys, threading
+from os import path, startfile
 from pystray import Icon, Menu, MenuItem
 from PIL import Image
-from automat import MethodicalMachine
-from os import getcwd, path, startfile
-from mamman import model
+from queue import Queue
+from wrapper import Plugin_container
 
 #============================ tools start
 def state_tracer(old_state, input_, new_state):
@@ -32,12 +28,7 @@ def state_tracer(old_state, input_, new_state):
     logging.info("state_tracer - old_state:"+ old_state+ ", input:"+ input_+ ", new state:"+ new_state)
 #============================ tools end
 #============================ event handelers start
-def event_click_available():
-    "UI event: User is enabeling the available flag"
-    logging.info('UI event: click')
-    menu.user_available = not menu.user_available
-
-def event_default():
+def event_click_default():
     "UI event: Single click on icon"
     startfile('https://lts.no/tjenester/eplan')
 
@@ -49,23 +40,12 @@ def event_click_exit():
     "UI event: Exit"
     client_machine.close_application()
 #============================ event handelers end
-#============================ plugin encapsulation class start
-class Plugin_container:
-    def __init__(self, plugin_id, plugin_name):
-        self.id = plugin_id
-        self.name = plugin_name
-        self.module = importlib.import_module("mamman.plugins."+plugin_name)
-        self.obj = self.module.Plugin()
-#============================ plugin encapsulation class end
 #============================ state machine start
 class Model(object):
     "Finite state-machine for the Mamman client"
-    from mamman.api import connection
-    from mamman.crypto import tools
-
     _machine = MethodicalMachine()
-    _connection = None
     _icon = None
+    _menu_cache = []
     _plugin_names = ["demo"]
     p = []
 
@@ -73,7 +53,7 @@ class Model(object):
     #============================ inputs
     @_machine.input()
     def initiate_application(self):
-        "Initiate connection to server"
+        "Initiate application and plugins"
 
     @_machine.input()
     def reading_finished(self):
@@ -92,44 +72,35 @@ class Model(object):
     def _initiate_application(self):
         "Establish all parts of the application"
         self._icon = Icon(name='Mamman',
-                          icon=Image.open(path.join(globalpath, 'res', 'logo_yellow.png')),
+                          icon=Image.open(path.join(globalpath, '..','res', 'logo_yellow.png')),
                           title='LTS AS, Mamman 0.1')
         self._icon.visible = True
 
         # connect the menu to the menu_items variable to make the menu dynamic
-        menu.items.append(MenuItem('Avslutt Mamman', event_click_exit))
-        menu.items.append(MenuItem('Default item', event_default, visible=False, default=True))
+        self._menu_cache.append(MenuItem('Avslutt Mamman', event_click_exit))
+        self._menu_cache.append(MenuItem('Default item', event_click_default, visible=False, default=True))
 
         # Establish plugins in Plugin_container classes
         for plugin_id, plugin_name in enumerate(self._plugin_names):
             plugin_id += 1
             self.p.append(Plugin_container(plugin_id, plugin_name))
-        
-
 
         self._icon.menu = Menu(lambda: (
-            menu.items[i]
-            for i in range(len(menu.items))))
+            self._menu_cache[i]
+            for i in range(len(self._menu_cache))))
 
         event_all_loaded() # Mark that the process is finished by trigging an event
         self._icon.run() #_icon.run is last because it is not ending before _icon.stop
 
     @_machine.output()
-    def _verify_user(self):
-        "Connect to API and verify user"
-        self._connection = self.connection()
-        credentials = self.tools(userdir.crypto).get_credentials()
-        user_key = self._connection.post('user', credentials)['resource'][0]['key']
-        if user_key != None:
-            logging.info("ATOMATIC event: User login OK\n"+ user_key)
-
-    @_machine.output()
     def _list_tasks(self):
         "Populate tasks in the the icon menu"
-        self._icon.icon = Image.open(path.join(globalpath, 'res', 'logo_blue.png'))
+        self._icon.icon = Image.open(path.join(globalpath, '..', 'res', 'logo_blue.png'))
         for plugin_id, plugin in enumerate(self.p):
+            # Adding separator betwean every plugin
+            self._menu_cache.append(Menu.SEPARATOR)
             for element in plugin.obj.menu_items:
-                menu.items.append(MenuItem(element, self.p[plugin_id].obj.run_menu_item, checked=None, radio=False))
+                self._menu_cache.append(MenuItem(element, self.p[plugin_id].obj.run_menu_item, checked=None, radio=False))
 
     @_machine.output()
     def _close_application(self):
@@ -233,7 +204,6 @@ if __name__ == "__main__":
         globalpath = path.dirname(path.realpath(__file__))
 
     # All state belongs to the model
-    menu = model.menu
     client_machine = Model()
     client_machine.setTrace(state_tracer)
     client_machine.initiate_application()
