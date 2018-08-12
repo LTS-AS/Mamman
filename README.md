@@ -1,6 +1,22 @@
 [![Build Status](https://travis-ci.org/LTS-AS/Mamman.svg?branch=master)](https://travis-ci.org/LTS-AS/Mamman)
 
-# Mamma
+# Mamman
+
 Mamman is a lightweight application that is visible from the system tray. It basically does nothing witout plugins.
 
-This application is developed, tested and used in Windows 7 Pro X64. Please feal free to test from other platfroms.
+## Contribution
+
+This application is in the experimental stage. Any input is appreciated.
+
+## OS compability
+
+This application is developed, tested and used in Windows 7 Pro X64. Please feal free to test and contribute with other platforms in mind.
+
+Release | OS version | Tester name | Result
+--- | --- | --- | ---
+ | Windows-7-6.1.7601-SP1 | HavardLine | OK
+
+## TODO
+
+- Enable plugins to run as service
+- Give plugins access to all MenuItem parameters
