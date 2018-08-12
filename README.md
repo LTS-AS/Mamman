@@ -10,7 +10,7 @@ This application is in the experimental stage. Any input is appreciated.
 
 ## OS compability
 
-This application is developed, tested and used in Windows 7 Pro X64. Please feal free to test and contribute with other platforms in mind.
+This application is developed, tested and used in Windows 7 Pro X64. Please feel free to test and contribute with other platforms in mind.
 
 Release | OS version | Tester name | Result
 --- | --- | --- | ---
