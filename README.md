@@ -4,6 +4,10 @@
 
 Mamman is a lightweight application that is visible from the system tray. It basically does nothing witout plugins.
 
+![Mamman application](res\mamman.png)
+
+You can right click on the icon to trig your spesific tasks.
+
 ## Contribution
 
 This application is in the experimental stage. Any input is appreciated.
