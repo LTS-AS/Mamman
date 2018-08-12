@@ -20,7 +20,7 @@ from os import path, startfile
 from pystray import Icon, Menu, MenuItem
 from PIL import Image
 from queue import Queue
-from wrapper import Plugin_container
+from wrapper import Plugin_wrapper
 
 #============================ tools start
 def state_tracer(old_state, input_, new_state):
@@ -73,17 +73,17 @@ class Model(object):
         "Establish all parts of the application"
         self._icon = Icon(name='Mamman',
                           icon=Image.open(path.join(globalpath, '..','res', 'logo_yellow.png')),
-                          title='LTS AS, Mamman 0.1')
+                          title='Mamman 0.1')
         self._icon.visible = True
 
         # connect the menu to the menu_items variable to make the menu dynamic
         self._menu_cache.append(MenuItem('Avslutt Mamman', event_click_exit))
         self._menu_cache.append(MenuItem('Default item', event_click_default, visible=False, default=True))
 
-        # Establish plugins in Plugin_container classes
+        # Establish plugins in Plugin_wrapper classes
         for plugin_id, plugin_name in enumerate(self._plugin_names):
             plugin_id += 1
-            self.p.append(Plugin_container(plugin_id, plugin_name))
+            self.p.append(Plugin_wrapper(plugin_id, plugin_name))
 
         self._icon.menu = Menu(lambda: (
             self._menu_cache[i]
@@ -96,17 +96,22 @@ class Model(object):
     def _list_tasks(self):
         "Populate tasks in the the icon menu"
         self._icon.icon = Image.open(path.join(globalpath, '..', 'res', 'logo_blue.png'))
-        for plugin_id, plugin in enumerate(self.p):
+        for plugin in self.p:
             # Adding separator betwean every plugin
             self._menu_cache.append(Menu.SEPARATOR)
             for element in plugin.obj.menu_items:
-                self._menu_cache.append(MenuItem(element, self.p[plugin_id].obj.run_menu_item, checked=None, radio=False))
+                self._menu_cache.append(MenuItem(
+                    element['text'],
+                    element['function'],
+                    checked=None,
+                    radio=False,
+                    # enabled=element['enabled'])
+                    ))
 
     @_machine.output()
     def _close_application(self):
         "Close the application"
         self._icon.menu = None
-        #self._icon.visible = False
         self._icon.stop()
         q.join()       # block until all tasks are done
 
@@ -187,7 +192,9 @@ if __name__ == "__main__":
     def worker():
         while True:
             item = q.get()
-            print(item)
+            print('start')
+            item()
+            print('end')
             q.task_done()
     
     # Establish a number of worker threads
