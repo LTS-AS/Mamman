@@ -4,9 +4,9 @@
 
 Mamman is a lightweight application that is visible from the system tray. It basically does nothing witout plugins.
 
-![Mamman application](res\mamman.png)
+![Mamman application](res/mamman.png)
 
-You can right click on the icon to trig your spesific tasks.
+You can right click on the icon to trig whatever tasks the plugin(s) include. Writing plugins is easy if you are used to Python.
 
 ## Contribution
 
