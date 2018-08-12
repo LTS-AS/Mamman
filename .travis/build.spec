@@ -6,7 +6,7 @@ block_cipher = None
 basedir = os.getcwd()
 print(basedir)
 
-a = Analysis([os.path.join(basedir, 'main.py')],
+a = Analysis([os.path.join(basedir, 'mamman', '__init__.py')],
              pathex=[basedir],
              binaries= [],
              datas= [ (os.path.join(basedir, 'res', '*.png'), 'res' ) ],
