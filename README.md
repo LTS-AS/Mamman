@@ -14,7 +14,7 @@ This application is developed, tested and used in Windows 7 Pro X64. Please feal
 
 Release | OS version | Tester name | Result
 --- | --- | --- | ---
-main branch 2018-08-12 | Windows-7-6.1.7601-SP1 | HavardLine | OK
+master branch 2018-08-12 | Windows-7-6.1.7601-SP1 | HavardLine | OK
 
 ## TODO
 
