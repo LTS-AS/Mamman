@@ -32,7 +32,7 @@ class Plugin:
     # It is possible to return an empty array if no MenuItems should be generated.
     @property
     def menu_items(self):
-        return [{'text': 'Report an issue', 'function': report_sucking}]
+        return [{'text': 'Repport issue', 'function': report_sucking}]
             
 p = Plugin()
 

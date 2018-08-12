@@ -77,7 +77,7 @@ class Model(object):
         self._icon.visible = True
 
         # connect the menu to the menu_items variable to make the menu dynamic
-        self._menu_cache.append(MenuItem('Avslutt Mamman', event_click_exit))
+        self._menu_cache.append(MenuItem('Exit Mamman', event_click_exit))
         self._menu_cache.append(MenuItem('Default item', event_click_default, visible=False, default=True))
 
         # Establish plugins in Plugin_wrapper classes
