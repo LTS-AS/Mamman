@@ -3,14 +3,14 @@ VSVersionInfo(
     kids=[
         StringFileInfo([
             StringTable( u'040904b0', [
-                StringStruct(u'CompanyName', u'LTS AS, Dvergstien 6, 1890 Rakkestad, Norway'), 
+                StringStruct(u'CompanyName', u'LTS AS, Furumoen 5, 7300 Orkanger, Norway'), 
                 StringStruct(u'ProductName', u'Mamman'),
-                StringStruct(u'ProductVersion', u'0, 0, 0, 2'),
+                StringStruct(u'ProductVersion', u'0, 0, 0, 3'),
                 StringStruct(u'InternalName', u'Mamman'),
                 StringStruct(u'OriginalFilename', u'Mamman.exe'),
-                StringStruct(u'FileVersion', u'0, 0, 0, 2'),
+                StringStruct(u'FileVersion', u'0, 0, 0, 3'),
                 StringStruct(u'FileDescription', u'Test'),
-                StringStruct(u'LegalCopyright', u'Copyright 2017 LTS AS'),
+                StringStruct(u'LegalCopyright', u'Copyright 2021 LTS AS'),
             ]) 
         ]),
         VarFileInfo([

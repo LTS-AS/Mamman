@@ -4,12 +4,15 @@ from pprint import pprint
 
 block_cipher = None
 basedir = os.getcwd()
-print(basedir)
+dataSet = [ 
+    (os.path.join(basedir, 'res', '*.png'), 'res' )
+    ]
+print("BASEDIR: ", basedir)
 
 a = Analysis([os.path.join(basedir, 'mamman', '__init__.py')],
              pathex=[basedir],
              binaries= [],
-             datas= [ (os.path.join(basedir, 'res', '*.png'), 'res' ) ],
+             datas= dataSet,
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -17,7 +20,6 @@ a = Analysis([os.path.join(basedir, 'mamman', '__init__.py')],
              win_no_prefer_redirects=False,
              win_private_assemblies=False,
              cipher=block_cipher)
-
 
 pyz = PYZ(a.pure, a.zipped_data,
              cipher=block_cipher)
@@ -29,9 +31,9 @@ exe = EXE(pyz,
           a.datas,
           console=False,
           debug=False,
-          icon='res/app.ico',
+#          icon='res/app.ico',
           name='mamman',
           runtime_tmpdir=None,
           strip=False,
           upx=True,
-          version=os.path.join('.travis', 'version.txt'))
+          version=os.path.join('version.txt'))

@@ -1,5 +1,7 @@
 automat
+jinja2
 pyinstaller
+pywin32
 pystray
 rsa
 yapsy
